@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Event Announcements</title>
+</head>
+<body>
+    <h1>Upcoming Events</h1>
+    <div id="events-list"></div>
+
+    <!-- Registration Modal -->
+    <div id="registration-modal" class="hidden">
+        <div class="modal-content">
+            <h2>Register for Event</h2>
+            <form id="registration-form">
+                <label for="event-select">Select Event</label>
+                <select id="event-select" required></select>
+                
+                <label for="FirstName">First Name</label>
+                <input type="text" id="FirstName" required>
+                
+                <label for="LastName">Last Name</label>
+                <input type="text" id="LastName" required>
+                
+                <label for="Email">Email</label>
+                <input type="email" id="Email" required>
+                
+                <label for="Age">Age</label>
+                <input type="number" id="Age" required>
+
+                <button type="submit">Register</button>
+            </form>
+            <button id="close-modal">Close</button>
+        </div>
+    </div>
+
+    <button id="open-registration">Register Now</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const eventsList = document.getElementById("events-list");
+            const eventSelect = document.getElementById("event-select");
+            const registrationModal = document.getElementById("registration-modal");
+            const openRegistrationBtn = document.getElementById("open-registration");
+            const closeModalBtn = document.getElementById("close-modal");
+
+            // Fetch and display events
+            fetch("http://localhost:1337/api/events")
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched events:", data);
+
+                    if (!data || !data.data || !Array.isArray(data.data) || data.data.length === 0) {
+                        eventsList.innerHTML = "<p>No upcoming events found.</p>";
+                        return;
+                    }
+
+                    // Clear previous options
+                    eventSelect.innerHTML = "<option value='' disabled selected>Select an event</option>";
+
+                    data.data.forEach(event => {
+                        const eventId = event.id;
+                        const title = event.Title || "Untitled Event";
+                        const location = event.Location || "Location not specified";
+                        const time = event.Time || "Time not specified";
+                        const day = event.Day || "Day not specified";
+                        const age = event.Age || "Age not specified";
+                        const certificate = event.Certificate ? "✅ Yes" : "❌ No";
+                        
+                        let description = "No description available";
+                        if (Array.isArray(event.Description)) {
+                            description = event.Description.map(block => {
+                                if (block.children) {
+                                    return block.children.map(child => child.text).join("");
+                                }
+                                return "";
+                            }).join("\n");
+                        }
+
+                        // Add event to the list
+                        const eventDiv = document.createElement("div");
+                        eventDiv.classList.add("event");
+                        eventDiv.innerHTML = `
+                            <h2>${title}</h2>
+                            <p><strong>Location:</strong> ${location}</p>
+                            <p><strong>Time:</strong> ${time}</p>
+                            <p><strong>Day:</strong> ${day}</p>
+                            <p><strong>Age:</strong> ${age}</p>
+                            <p><strong>Certificate:</strong> ${certificate}</p>
+                            <p><strong>Description:</strong> ${description}</p>
+                        `;
+                        eventsList.appendChild(eventDiv);
+
+                        // Add event to the dropdown
+                        const option = document.createElement("option");
+                        option.value = eventId;
+                        option.textContent = title;
+                        eventSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error fetching events:", error));
+
+            // Show registration form when "Register Now" is clicked
+            openRegistrationBtn.addEventListener("click", () => {
+                registrationModal.classList.remove("hidden");
+            });
+
+            // Close modal
+            closeModalBtn.addEventListener("click", () => {
+                registrationModal.classList.add("hidden");
+            });
+
+            // Handle form submission
+            document.getElementById("registration-form").addEventListener("submit", (event) => {
+                event.preventDefault();
+                const form = event.target;
+                
+                const selectedEventId = eventSelect.value;
+                if (!selectedEventId) {
+                    alert("Please select an event.");
+                    return;
+                }
+
+                const formData = {
+                    data: {
+                        FirstName: form.FirstName.value,
+                        LastName: form.LastName.value,
+                        Email: form.Email.value,
+                        Age: Number(form.Age.value),
+                        event: Number(selectedEventId)
+                    }
+                };
+
+                // Submit registration
+                fetch("http://localhost:1337/api/registrations", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error("Registration failed:", data.error);
+                        alert("Registration failed: " + data.error.message);
+                    } else {
+                        console.log("Registration successful:", data);
+                        alert("Successfully registered for the event!");
+                        form.reset();
+                        registrationModal.classList.add("hidden"); // Close form after success
+                    }
+                })
+                .catch(error => console.error("Error registering:", error));
+            });
+        });
+    </script>
+</body>
+</html>
