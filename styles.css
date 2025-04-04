@@ -1,86 +1,200 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background-color: #f4f4f9;
+    color: #333;
 }
 
+/* Heading */
 h1 {
     text-align: center;
+    font-size: 28px;
+    color: #222;
 }
 
+/* Events List */
 #events-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
+/* Individual Event */
 .event {
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     padding: 15px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
 }
 
+.event:hover {
+    transform: scale(1.02);
+}
+
+.event h2 {
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.event p {
+    margin: 5px 0;
+}
+
+/* Buttons */
 button {
-    padding: 10px;
+    padding: 12px 16px;
     font-size: 16px;
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: 0.3s;
 }
 
 button:hover {
-    background-color: #dcdcdc;
+    opacity: 0.85;
 }
 
-/* Hide the registration form by default */
+#open-registration {
+    display: block;
+    margin: 20px auto;
+    background: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+#close-modal {
+    background: #dc3545;
+    color: white;
+}
+
+/* Registration Modal */
 #registration-modal.hidden {
     display: none;
 }
 
-/* Modal styling */
 #registration-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 400px;
-    text-align: center;
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-input, select {
-    display: block;
-    margin: 10px auto;
-    padding: 8px;
-    width: 80%;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+/* Modal header */
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 70vh;  /* Set a maximum height of 70% of the viewport height */
+    text-align: center;
+    overflow-y: auto;  /* Allows scrolling if content overflows */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease;
+    position: relative;  /* Make sure close button is positioned relative to this */
+}
+
+.modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #222;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+    max-height: 60vh; /* Reduce the space taken by the form */
 }
 
-form button {
+/* Make form inputs smaller to fit */
+input, select {
+    padding: 10px;
     width: 100%;
-    background-color: #4CAF50;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px; /* Reduced font size */
+    transition: 0.3s;
+    background: #f9f9f9;
+}
+
+input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+label {
+    text-align: left;
+    font-weight: bold;
+    margin-top: 5px;
+    color: #555;
+}
+
+/* Submit Button */
+/* form button {
+    width: 100%;
+    background: #28a745;
     color: white;
+    font-weight: bold;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
-    padding: 10px;
+} */
+
+form button {
+    padding: 12px;
     font-size: 18px;
 }
 
 form button:hover {
-    background-color: #45a049;
+    background: #218838;
+}
+
+/* Close Modal Button */
+#close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#close-modal:hover {
+    color: #ff0000;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .modal-content {
+        width: 90%;
+    }
 }
